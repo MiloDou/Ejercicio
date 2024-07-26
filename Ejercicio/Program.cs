@@ -100,7 +100,7 @@ public class ArchaicCalculator
         Console.Clear();
         try
         {
-            Console.WriteLine("--------------------------");
+            Console.WriteLine("---------------------------");
             Console.ForegroundColor = ConsoleColor.DarkBlue;
             Console.WriteLine("       NEW NUMBERS");
             Console.ResetColor();
