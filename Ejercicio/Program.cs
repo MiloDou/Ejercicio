@@ -1,13 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
-public class ArchaicCalculator
+public class Calculator
 {
-    static double number1 = 0;
-    static double number2 = 0;
-    static double number3 = 0;
-    static double number4 = 0;
-    static double number5 = 0;
-    static double result = 0;
+    static List<double> numbers = new List<double>();
 
     public static void Main()
     {
@@ -21,37 +18,26 @@ public class ArchaicCalculator
                 switch (option1)
                 {
                     case 1:
-                        EnterNewNumbers();
+                        EnterNewNumbers(numbers);
                         break;
-
                     case 2:
-                        result = CalculateMean(number1, number2, number3, number4, number5);
-                        Console.WriteLine("\nThe mean is: " + result);
+                        Console.WriteLine($"Mean: {CalculateMean(numbers)}");
                         break;
-
                     case 3:
-                        double median = CalculateMedian(number1, number2, number3, number4, number5);
-                        Console.WriteLine("\nThe median is: " + median);
+                        Console.WriteLine($"Median: {CalculateMedian(numbers)}");
                         break;
-
                     case 4:
-                        double mode = CalculateMode(number1, number2, number3, number4, number5);
-                        Console.WriteLine("\nThe mode is: " + mode);
+                        Console.WriteLine($"Mode: {CalculateMode(numbers)}");
                         break;
-
                     case 5:
-                        double standardDeviation = CalculateStandardDeviation(number1, number2, number3, number4, number5);
-                        Console.WriteLine("\nThe standard deviation is: " + standardDeviation);
+                        Console.WriteLine($"Standard Deviation: {CalculateStandardDeviation(numbers)}");
                         break;
-
                     case 6:
                         RequestNewNumbers();
                         break;
-
                     case 7:
                         ExitProgram();
                         return;
-
                     default:
                         Console.WriteLine("Invalid option. Try again.");
                         break;
@@ -95,7 +81,7 @@ public class ArchaicCalculator
         Console.Write("\nChoose an option: ");
     }
 
-    static void EnterNewNumbers()
+    static void EnterNewNumbers(List<double> numbers)
     {
         Console.Clear();
         try
@@ -105,101 +91,81 @@ public class ArchaicCalculator
             Console.WriteLine("       NEW NUMBERS");
             Console.ResetColor();
             Console.WriteLine("-------------------------\n");
-            Console.Write("Write first number: ");
-            number1 = Convert.ToDouble(Console.ReadLine());
-            Console.Write("Write second number: ");
-            number2 = Convert.ToDouble(Console.ReadLine());
-            Console.Write("Write third number: ");
-            number3 = Convert.ToDouble(Console.ReadLine());
-            Console.Write("Write fourth number: ");
-            number4 = Convert.ToDouble(Console.ReadLine());
-            Console.Write("Write fifth number: ");
-            number5 = Convert.ToDouble(Console.ReadLine());
+            numbers.Clear();
+            Console.Write("Choose the limit of numbers: ");
+            int LimitNumber = Convert.ToInt32(Console.ReadLine());
+
+            for (int i = 1; i <= LimitNumber; i++)
+            {
+                Console.Write($"Write number {i} : ");
+                double number = Convert.ToDouble(Console.ReadLine());
+                numbers.Add(number);
+            }
         }
-        catch (FormatException)
+        catch (FormatException ErrorMessage)
         {
             Console.WriteLine("Invalid format");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(ErrorMessage);
+            Console.ResetColor();
         }
-        catch (OverflowException)
+        catch (OverflowException ErrorMessage1)
         {
             Console.WriteLine("Overflow error");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(ErrorMessage1);
+            Console.ResetColor();
         }
         Console.ReadKey();
     }
 
-    static double CalculateMean(double a, double b, double c, double d, double e)
+    static double CalculateMean(List<double> numbers)
     {
-        Console.Clear();
-        Console.WriteLine("--------------------------");
-        Console.ForegroundColor = ConsoleColor.DarkBlue;
-        Console.WriteLine("       CALCULATE MEAN");
-        Console.ResetColor();
-        Console.WriteLine("-------------------------\n");
-        double sum = a + b + c + d + e;
-        double count = 5;
-        return sum / count;
+        double sum = numbers.Sum();
+        double mean = sum / numbers.Count;
+        return mean;
     }
 
-    static double CalculateMedian(double a, double b, double c, double d, double e)
+    static double CalculateMedian(List<double> numbers)
     {
-        Console.Clear();
-        Console.WriteLine("--------------------------");
-        Console.ForegroundColor = ConsoleColor.DarkBlue;
-        Console.WriteLine("       CALCULATE MEDIAN");
-        Console.ResetColor();
-        Console.WriteLine("-------------------------\n");
-
-        // Encontrar el valor mediano
-        if ((a > b) == (a < c) && (a > c) == (a < d) && (a > d) == (a < e))
-            return a;
-        else if ((b > a) == (b < c) && (b > c) == (b < d) && (b > d) == (b < e))
-            return b;
-        else if ((c > a) == (c < b) && (c > b) == (c < d) && (c > d) == (c < e))
-            return c;
-        else if ((d > a) == (d < b) && (d > b) == (d < c) && (d > c) == (d < e))
-            return d;
+        numbers.Sort();
+        int count = numbers.Count;
+        if (count % 2 == 0)
+        {
+            return (numbers[count / 2 - 1] + numbers[count / 2]) / 2;
+        }
         else
-            return e;
+        {
+            return numbers[count / 2];
+        }
     }
 
-    static double CalculateMode(double a, double b, double c, double d, double e)
+    static double CalculateMode(List<double> numbers)
     {
-        Console.Clear();
-        Console.WriteLine("--------------------------");
-        Console.ForegroundColor = ConsoleColor.DarkBlue;
-        Console.WriteLine("       CALCULATE MODE");
-        Console.ResetColor();
-        Console.WriteLine("-------------------------\n");
-
-        double[] numbers = { a, b, c, d, e };
         var groups = numbers.GroupBy(v => v).OrderByDescending(g => g.Count());
         var mostFrequentGroup = groups.First();
         if (mostFrequentGroup.Count() == 1)
         {
-            Console.WriteLine("No found Mode");
-            return double.NaN; 
+            Console.WriteLine("No mode found");
+            return double.NaN;
         }
         else
         {
             return mostFrequentGroup.Key;
         }
     }
-    static double CalculateStandardDeviation(double a, double b, double c, double d, double e)
-    {
-        Console.WriteLine("-----------------------------------");
-        Console.ForegroundColor = ConsoleColor.DarkBlue;
-        Console.WriteLine("   CALCULATE STANDARD DEVIATION");
-        Console.ResetColor();
-        Console.WriteLine("-----------------------------------\n");
 
-        double mean = CalculateMean(a, b, c, d, e);
-        double variance = ((Math.Pow(a - mean, 2) + Math.Pow(b - mean, 2) + Math.Pow(c - mean, 2) + Math.Pow(d - mean, 2) + Math.Pow(e - mean, 2)) / 5);
-        return Math.Sqrt(variance);
+    static double CalculateStandardDeviation(List<double> numbers)
+    {
+        double mean = CalculateMean(numbers);
+        double sumOfSquaresOfDifferences = numbers.Select(val => (val - mean) * (val - mean)).Sum();
+        double standardDeviation = Math.Sqrt(sumOfSquaresOfDifferences / numbers.Count);
+        return standardDeviation;
     }
 
     static void RequestNewNumbers()
     {
-        EnterNewNumbers();
+        EnterNewNumbers(numbers);
     }
 
     static void ExitProgram()
